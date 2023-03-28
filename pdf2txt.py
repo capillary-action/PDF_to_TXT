@@ -45,21 +45,22 @@ for pdf_file in pdf_files:
                     # Convert the image to text using pytesseract
                     text = pytesseract.image_to_string(img, lang='eng')
 
-                    # Format the extracted text for training with the Stanford Alpaca 7B model
+                    # Format the extracted text for training with BERT
                     formatted_text = ""
 
                     # Remove any non-alphanumeric characters and extra spaces
                     text = re.sub(r'[^\w\s]', '', text)
                     text = re.sub(r'\s+', ' ', text)
 
-                    # Split the text into sentences and add tags to each sentence
+                    # Add [CLS] at the beginning of each sentence and [SEP] at the end
                     sentences = text.split('.')
                     for sentence in sentences:
                         if sentence.strip():
-                            formatted_text += "<S> " + sentence.strip() + " </S>\n"
+                            formatted_text += "[CLS] " + sentence.strip() + " [SEP] "
 
                     # Save the formatted text to a text file
                     text_filename = f'{pdf_file[:-4]}_page_{i}.txt'
                     text_path = os.path.join(text_output_dir, text_filename)
                     with open(text_path, mode='w') as file:
                         file.write(formatted_text)
+
